@@ -80,21 +80,38 @@ def normalize(src: Path, dst: Path, credit: str, clip: dict = None):
         ])
 
 def make_card(text: str, dst: Path, seconds: int = 3):
-    """Generate a title/outro card from text (no external asset needed)."""
-    safe = text.replace(":", r"\:").replace("'", r"’")
-    run([
-        "ffmpeg", "-y",
-        "-f", "lavfi", "-i", f"color=c=0x0a0a14:s={W}x{H}:d={seconds}:r={FPS}",
-        "-f", "lavfi", "-i", f"anullsrc=r=48000:cl=stereo",
-        "-vf", (
-            f"drawtext=text='{safe}':x=(w-tw)/2:y=(h-th)/2:"
-            f"fontsize=64:fontcolor=white"
-        ),
-        "-t", str(seconds),
-        "-c:v", "libx264", "-preset", "medium", "-crf", "20",
-        "-c:a", "aac", "-b:a", ABR, "-pix_fmt", "yuv420p",
-        str(dst),
-    ])
+    """Title/outro card. Uses assets/card_bg.jpg as background if present."""
+    safe = text.replace(":", r"\:").replace("’", r"’")
+    bg = BASE / "assets" / "card_bg.jpg"
+    text_filter = (
+        f"drawtext=text=’{safe}’:x=(w-tw)/2:y=(h-th)/2:"
+        f"fontsize=64:fontcolor=white:box=1:boxcolor=black@0.45:boxborderw=12"
+    )
+    if bg.exists():
+        run([
+            "ffmpeg", "-y",
+            "-loop", "1", "-i", str(bg),
+            "-f", "lavfi", "-i", f"anullsrc=r=48000:cl=stereo",
+            "-vf", (
+                f"scale={W}:{H}:force_original_aspect_ratio=increase,"
+                f"crop={W}:{H},fps={FPS},{text_filter}"
+            ),
+            "-t", str(seconds),
+            "-c:v", "libx264", "-preset", "medium", "-crf", "20",
+            "-c:a", "aac", "-b:a", ABR, "-pix_fmt", "yuv420p",
+            str(dst),
+        ])
+    else:
+        run([
+            "ffmpeg", "-y",
+            "-f", "lavfi", "-i", f"color=c=0x0a0a14:s={W}x{H}:d={seconds}:r={FPS}",
+            "-f", "lavfi", "-i", f"anullsrc=r=48000:cl=stereo",
+            "-vf", text_filter,
+            "-t", str(seconds),
+            "-c:v", "libx264", "-preset", "medium", "-crf", "20",
+            "-c:a", "aac", "-b:a", ABR, "-pix_fmt", "yuv420p",
+            str(dst),
+        ])
 
 def concat(parts, dst: Path):
     listfile = OUT / "_concat.txt"
