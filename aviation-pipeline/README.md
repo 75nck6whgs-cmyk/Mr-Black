@@ -77,10 +77,58 @@ on top — the tension of the real transmission is what keeps viewers watching.
   archival use is generally permitted with credit.
 - **FAA FOIA requests** — Request specific recordings. Free, takes a few weeks.
 
-## Next build-outs (ask and I'll add them)
+## Next build-outs
 
 - ~~**ATC-audio overlay**~~ — ✅ done
-- **Auto-caption generation** (Whisper) — for accessibility + SEO
-- **Thumbnail generator** — 1280×720 with title text
-- **YouTube Data API uploader** — for your OWN finished episodes
-- **Batch mode** — build a whole content calendar in one run
+- ~~**Auto-caption generation** (Whisper)~~ — ✅ done
+- ~~**Thumbnail generator**~~ — ✅ done
+- ~~**YouTube Data API uploader**~~ — ✅ done
+- ~~**Batch mode**~~ — ✅ done
+
+## Full pipeline (one episode)
+
+```bash
+# 1. Build the episode
+python3 build_episode.py episode_002.json
+# -> output/episode_002.mp4
+# -> metadata/episode_002_description.txt
+
+# 2. Generate captions (Whisper)
+python3 caption_episode.py output/episode_002.mp4
+# -> metadata/episode_002.srt
+# -> output/episode_002_captioned.mp4
+
+# 3. Make thumbnail
+python3 make_thumbnail.py output/episode_002.mp4 "When Pilots Save the Day" --timestamp 5
+# -> metadata/episode_002_thumbnail.jpg
+
+# 4. Upload (stays private until you review)
+python3 upload_episode.py output/episode_002.mp4 --title "When Pilots Save the Day"
+# -> https://www.youtube.com/watch?v=...
+```
+
+## Batch mode (full week in one run)
+
+Edit `schedule.json` with your episode list, then:
+
+```bash
+python3 batch_build.py schedule.json
+```
+
+Build, caption, and thumbnail generation run in sequence for each episode.
+Set `"captions": false` or `"thumbnails": false` to skip those steps.
+
+## YouTube uploader setup (one-time)
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com) → APIs & Services → Enable **YouTube Data API v3**
+2. Create OAuth 2.0 credentials (Desktop app) → download as `client_secrets.json`
+3. Place `client_secrets.json` in this directory (it's gitignored)
+4. First run opens a browser for OAuth — token is cached after that
+
+## Install dependencies
+
+```bash
+pip install -r requirements.txt
+brew install ffmpeg   # mac
+# apt install ffmpeg  # linux
+```
