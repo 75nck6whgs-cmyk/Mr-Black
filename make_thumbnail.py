@@ -21,9 +21,15 @@ BASE = Path(__file__).parent
 META = BASE / "metadata"
 
 FONT_CANDIDATES = [
+    # Mac
+    "/System/Library/Fonts/Helvetica.ttc",
+    "/System/Library/Fonts/HelveticaNeue.ttc",
+    "/Library/Fonts/Arial Bold.ttf",
+    "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
+    # Linux
     "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
     "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
-    "/System/Library/Fonts/Helvetica.ttc",
+    # Windows
     "C:/Windows/Fonts/arialbd.ttf",
 ]
 

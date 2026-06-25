@@ -8,6 +8,8 @@ metadata/*
 !metadata/.gitkeep
 assets/*
 !assets/.gitkeep
+!assets/*.jpg
+!assets/*.png
 *.mp4
 *.mp3
 *.wav

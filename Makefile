@@ -12,11 +12,12 @@ TITLE    ?= $(shell $(PYTHON) -c "import json; print(json.load(open('$(EP)'))['t
 MODEL    ?= base
 PRIVACY  ?= private
 
-.PHONY: help setup build caption thumbnail upload batch clean
+.PHONY: help setup setup-mac new build caption thumbnail upload batch clean
 
 help:
 	@echo ""
-	@echo "  make setup                        Install dependencies (run once on server)"
+	@echo "  make setup-mac                    Install everything on Mac (run once)"
+	@echo "  make new                          Create a new episode interactively"
 	@echo "  make build    EP=episode_002.json Build + caption + thumbnail"
 	@echo "  make batch                        Build all episodes in schedule.json"
 	@echo "  make upload   EP=output/ep.mp4   Upload to YouTube (private by default)"
@@ -28,8 +29,14 @@ help:
 	@echo "    PRIVACY=public                  Upload privacy (private/unlisted/public)"
 	@echo ""
 
+setup-mac:
+	bash install_mac.sh
+
 setup:
 	bash vps_setup.sh
+
+new: venv
+	$(PYTHON) new_episode.py
 
 venv:
 	python3 -m venv .venv
