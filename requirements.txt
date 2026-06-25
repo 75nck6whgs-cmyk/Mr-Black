@@ -1,5 +1,4 @@
-requests>=2.32.0
-python-dotenv>=1.0.1
-gTTS>=2.5.1
-moviepy>=1.0.3
-Pillow>=10.4.0
+openai-whisper
+Pillow
+google-api-python-client
+google-auth-oauthlib

@@ -1,4 +1,0 @@
-openai-whisper
-Pillow
-google-api-python-client
-google-auth-oauthlib
