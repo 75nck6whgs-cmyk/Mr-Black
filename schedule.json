@@ -4,11 +4,6 @@
   "whisper_model": "base",
   "episodes": [
     {
-      "manifest": "episode_001.json",
-      "thumbnail_title": "When Pilots Save the Day",
-      "thumbnail_timestamp": 5.0
-    },
-    {
       "manifest": "episode_002.json",
       "thumbnail_title": "When Pilots Save the Day",
       "thumbnail_timestamp": 5.0

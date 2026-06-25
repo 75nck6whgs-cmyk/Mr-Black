@@ -27,32 +27,74 @@ Add real value: ATC audio walkthrough, a diagram of the aircraft's path,
 "here's the moment the crew recovered and why it worked." That's what makes the
 upload defensible AND a better product.
 
-## Usage
+---
+
+## Zero to published — complete walkthrough
+
+### 1. Server setup (one-time)
 
 ```bash
-# 1. Drop your legally-sourced clips into raw/
-# 2. Describe the episode in a manifest (copy episode_001.json)
-# 3. Build:
-python3 build_episode.py episode_001.json
-# -> output/episode_001.mp4  + metadata/episode_001_description.txt
+ssh user@your-vps
+git clone <repo-url> && cd Mr-Noble
+bash vps_setup.sh
 ```
 
-## Running in Claude Code
+Or with make:
+```bash
+make setup
+```
 
-This works in either place. Claude Code is the better home for it because you'll
-be iterating on files and running ffmpeg repeatedly:
+### 2. Push your clips (from phone or laptop)
+
+Edit `sync.sh` — set `SERVER=user@your-vps-ip` — then:
 
 ```bash
-cd aviation-pipeline
-claude
-# then ask it to: add a clip, tweak the card style, batch-build a week of episodes
+bash sync.sh raw/incident_01.mp4          # footage
+bash sync.sh assets/incident_01_atc.mp3  # ATC audio
 ```
+
+### 3. Create your episode manifest
+
+Copy `episode_001.json`, fill in your clips, sources, and licenses.
+Every clip needs `source` + `license` or the build refuses to run.
+
+### 4. Build
+
+```bash
+# Single episode — encode + captions + thumbnail in one command
+make build EP=episode_002.json
+
+# Full content calendar
+make batch
+```
+
+### 5. Pull finished files back to your phone
+
+```bash
+bash sync.sh --pull
+# -> output/*.mp4, metadata/*_thumbnail.jpg, metadata/*_description.txt
+```
+
+### 6. Upload to YouTube
+
+```bash
+make upload EP=output/episode_002.mp4 TITLE="When Pilots Save the Day"
+
+# Schedule a publish time
+python3 upload_episode.py output/episode_002.mp4 \
+  --title "When Pilots Save the Day" \
+  --publish-at 2026-07-01T18:00:00Z
+```
+
+Token is cached after first login — no browser re-auth on repeat uploads.
+Thumbnail is attached automatically if `metadata/<stem>_thumbnail.jpg` exists.
+
+---
 
 ## ATC-audio overlay
 
-Add real radio comms to any clip by dropping the audio into `assets/` and
-declaring it in the manifest. The builder ducks ambient sound and mixes ATC
-on top — the tension of the real transmission is what keeps viewers watching.
+Add real radio comms to any clip. Drop the audio into `assets/`, declare it in
+the manifest. The builder ducks ambient sound and mixes ATC on top.
 
 ```json
 {
@@ -66,69 +108,54 @@ on top — the tension of the real transmission is what keeps viewers watching.
 
 | Field | Default | Effect |
 |---|---|---|
-| `atc_audio` | — | Filename in `assets/`. Omit to skip overlay. |
-| `atc_delay` | `0` | Seconds into the clip before ATC starts. Align to the peak moment. |
+| `atc_audio` | — | Filename in `assets/`. Omit to skip. |
+| `atc_delay` | `0` | Seconds into the clip before ATC starts. |
 | `atc_volume` | `0.85` | ATC level (0–1). |
-| `ambient_duck` | `0.15` | How much to reduce the clip's original audio under ATC. |
+| `ambient_duck` | `0.15` | How much to reduce ambient under ATC. |
 
 **Where to get ATC audio (legally):**
-- **NTSB accident dockets** — CVR transcripts and sometimes audio. Public domain.
-- **LiveATC.net** — Real-time and archived ATC. Check their terms; non-commercial
-  archival use is generally permitted with credit.
+- **NTSB accident dockets** — CVR transcripts + sometimes audio. Public domain.
+- **LiveATC.net** — Archived ATC recordings. Non-commercial use with credit.
 - **FAA FOIA requests** — Request specific recordings. Free, takes a few weeks.
 
-## Next build-outs
-
-- ~~**ATC-audio overlay**~~ — ✅ done
-- ~~**Auto-caption generation** (Whisper)~~ — ✅ done
-- ~~**Thumbnail generator**~~ — ✅ done
-- ~~**YouTube Data API uploader**~~ — ✅ done
-- ~~**Batch mode**~~ — ✅ done
-
-## Full pipeline (one episode)
-
-```bash
-# 1. Build the episode
-python3 build_episode.py episode_002.json
-# -> output/episode_002.mp4
-# -> metadata/episode_002_description.txt
-
-# 2. Generate captions (Whisper)
-python3 caption_episode.py output/episode_002.mp4
-# -> metadata/episode_002.srt
-# -> output/episode_002_captioned.mp4
-
-# 3. Make thumbnail
-python3 make_thumbnail.py output/episode_002.mp4 "When Pilots Save the Day" --timestamp 5
-# -> metadata/episode_002_thumbnail.jpg
-
-# 4. Upload (stays private until you review)
-python3 upload_episode.py output/episode_002.mp4 --title "When Pilots Save the Day"
-# -> https://www.youtube.com/watch?v=...
-```
-
-## Batch mode (full week in one run)
-
-Edit `schedule.json` with your episode list, then:
-
-```bash
-python3 batch_build.py schedule.json
-```
-
-Build, caption, and thumbnail generation run in sequence for each episode.
-Set `"captions": false` or `"thumbnails": false` to skip those steps.
+---
 
 ## YouTube uploader setup (one-time)
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com) → APIs & Services → Enable **YouTube Data API v3**
+1. [Google Cloud Console](https://console.cloud.google.com) → APIs & Services → Enable **YouTube Data API v3**
 2. Create OAuth 2.0 credentials (Desktop app) → download as `client_secrets.json`
-3. Place `client_secrets.json` in this directory (it's gitignored)
-4. First run opens a browser for OAuth — token is cached after that
+3. Place `client_secrets.json` in this directory (gitignored — never committed)
+4. First upload opens a browser for OAuth — token saved to `~/.aviation_pipeline_token.json` after that
+
+---
+
+## Running in Claude Code
+
+```bash
+claude
+# ask it to: add a clip, tweak the card style, batch-build a week of episodes
+```
+
+---
 
 ## Install dependencies
 
 ```bash
 pip install -r requirements.txt
-brew install ffmpeg   # mac
-# apt install ffmpeg  # linux
+
+# Mac
+brew install ffmpeg
+
+# Linux / VPS
+sudo apt install ffmpeg
+```
+
+## Make targets
+
+```
+make setup      Install everything on the server
+make build      Build + caption + thumbnail (EP=episode_002.json)
+make batch      Build all episodes in schedule.json
+make upload     Upload to YouTube (EP=output/ep.mp4 TITLE="...")
+make clean      Remove processed/ and output/ files
 ```
