@@ -36,3 +36,8 @@ upload defensible AND a better product.
 python3 build_episode.py episode_001.json
 # -> output/episode_001.mp4  + metadata/episode_001_description.txt
 ```
+
+## Running in Claude Code
+
+This works in either place. Claude Code is the better home for it because you'll
+be iterating on files and running ffmpeg repeatedly:
