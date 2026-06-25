@@ -28,3 +28,11 @@ Add real value: ATC audio walkthrough, a diagram of the aircraft's path,
 upload defensible AND a better product.
 
 ## Usage
+
+```bash
+# 1. Drop your legally-sourced clips into raw/
+# 2. Describe the episode in a manifest (copy episode_001.json)
+# 3. Build:
+python3 build_episode.py episode_001.json
+# -> output/episode_001.mp4  + metadata/episode_001_description.txt
+```
