@@ -1,0 +1,17 @@
+raw/*
+!raw/.gitkeep
+processed/*
+!processed/.gitkeep
+output/*
+!output/.gitkeep
+metadata/*
+!metadata/.gitkeep
+assets/*
+!assets/.gitkeep
+*.mp4
+*.mp3
+*.wav
+*.mov
+__pycache__/
+*.pyc
+.env

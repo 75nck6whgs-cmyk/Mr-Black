@@ -1,0 +1,32 @@
+{
+  "title": "When Pilots Save the Day",
+  "description": "Three moments where flight crews recovered from serious in-flight situations, with a breakdown of what went right.",
+  "outro": "Subscribe for more aviation breakdowns",
+  "clips": [
+    {
+      "file": "incident_01.mp4",
+      "caption": "Crosswind landing recovery",
+      "source": "NTSB",
+      "license": "Public Domain (US Gov)",
+      "url": "https://www.ntsb.gov/",
+      "atc_audio": "incident_01_atc.mp3",
+      "atc_delay": 2.5,
+      "atc_volume": 0.85,
+      "ambient_duck": 0.15
+    },
+    {
+      "file": "incident_02.mp4",
+      "caption": "Engine-out approach",
+      "source": "ViralHog",
+      "license": "Licensed via ViralHog #VH-XXXXXX",
+      "url": "https://www.viralhog.com/"
+    },
+    {
+      "file": "incident_03.mp4",
+      "caption": "Go-around in gusty conditions",
+      "source": "Filmer name",
+      "license": "Direct written permission (email on file 2026-06-20)",
+      "url": ""
+    }
+  ]
+}
