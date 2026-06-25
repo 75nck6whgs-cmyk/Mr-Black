@@ -62,8 +62,11 @@ def batch(schedule_path: Path):
 
         print(f"[{i}/{len(episodes)}] {manifest_file}")
 
+        # Use sys.executable so subprocesses run inside the same virtualenv.
+        py = sys.executable
+
         ok = run_step(
-            ["python3", BASE / "build_episode.py", manifest_path],
+            [py, BASE / "build_episode.py", manifest_path],
             "build episode",
         )
         if not ok:
@@ -75,14 +78,14 @@ def batch(schedule_path: Path):
 
         if captions and episode_mp4.exists():
             run_step(
-                ["python3", BASE / "caption_episode.py", episode_mp4, "--model", whisper_model],
+                [py, BASE / "caption_episode.py", episode_mp4, "--model", whisper_model],
                 "generate captions",
             )
 
         if thumbnails and episode_mp4.exists():
             title = thumb_title or stem.replace("_", " ").title()
             run_step(
-                ["python3", BASE / "make_thumbnail.py", episode_mp4, title,
+                [py, BASE / "make_thumbnail.py", episode_mp4, title,
                  "--timestamp", str(thumb_ts)],
                 f"make thumbnail ({title})",
             )
