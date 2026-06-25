@@ -47,3 +47,11 @@ cd aviation-pipeline
 claude
 # then ask it to: add a clip, tweak the card style, batch-build a week of episodes
 ```
+
+## Next build-outs (ask and I'll add them)
+
+- **ATC-audio overlay** — sync radio comms to the footage
+- **Auto-caption generation** (Whisper) — for accessibility + SEO
+- **Thumbnail generator** — 1280×720 with title text
+- **YouTube Data API uploader** — for your OWN finished episodes
+- **Batch mode** — build a whole content calendar in one run
