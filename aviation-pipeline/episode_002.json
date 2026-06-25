@@ -8,7 +8,11 @@
       "caption": "Crosswind landing recovery",
       "source": "NTSB",
       "license": "Public Domain (US Gov)",
-      "url": "https://www.ntsb.gov/"
+      "url": "https://www.ntsb.gov/",
+      "atc_audio": "incident_01_atc.mp3",
+      "atc_delay": 2.5,
+      "atc_volume": 0.85,
+      "ambient_duck": 0.15
     },
     {
       "file": "incident_02.mp4",

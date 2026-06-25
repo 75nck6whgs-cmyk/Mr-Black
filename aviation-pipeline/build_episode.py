@@ -34,25 +34,50 @@ def run(cmd):
     print("  $", " ".join(str(c) for c in cmd))
     subprocess.run(cmd, check=True, capture_output=True)
 
-def normalize(src: Path, dst: Path, credit: str):
-    """Scale/pad to 1080p, unify fps + audio, burn a small attribution line."""
-    # Escape for ffmpeg drawtext
-    safe = credit.replace(":", r"\:").replace("'", r"’")
+def normalize(src: Path, dst: Path, credit: str, clip: dict = None):
+    """Scale/pad to 1080p, unify fps + audio, burn attribution, optionally mix ATC audio."""
+    safe = credit.replace(":", r"\:").replace("’", r"’")
     vf = (
         f"scale={W}:{H}:force_original_aspect_ratio=decrease,"
         f"pad={W}:{H}:(ow-iw)/2:(oh-ih)/2,"
         f"fps={FPS},"
-        f"drawtext=text='{safe}':x=20:y=h-40:fontsize=22:"
+        f"drawtext=text=’{safe}’:x=20:y=h-40:fontsize=22:"
         f"fontcolor=white@0.85:box=1:boxcolor=black@0.4:boxborderw=8"
     )
-    run([
-        "ffmpeg", "-y", "-i", str(src),
-        "-vf", vf,
-        "-c:v", "libx264", "-preset", "medium", "-crf", "20",
-        "-c:a", "aac", "-b:a", ABR, "-ar", "48000",
-        "-pix_fmt", "yuv420p",
-        str(dst),
-    ])
+
+    atc_file = (clip or {}).get("atc_audio")
+    if atc_file:
+        atc_path = BASE / "assets" / atc_file
+        if not atc_path.exists():
+            sys.exit(f"ATC audio not found: {atc_path}  (place it in assets/)")
+        delay_ms = int((clip.get("atc_delay", 0)) * 1000)
+        atc_vol = clip.get("atc_volume", 0.85)
+        duck = clip.get("ambient_duck", 0.15)
+        # Duck ambient under ATC; delay ATC to the moment tension peaks.
+        af = (
+            f"[0:a]volume={duck}[ambient];"
+            f"[1:a]adelay={delay_ms}|{delay_ms},volume={atc_vol}[atc];"
+            f"[ambient][atc]amix=inputs=2:duration=first[aout]"
+        )
+        run([
+            "ffmpeg", "-y", "-i", str(src), "-i", str(atc_path),
+            "-filter_complex", af,
+            "-vf", vf,
+            "-map", "0:v", "-map", "[aout]",
+            "-c:v", "libx264", "-preset", "medium", "-crf", "20",
+            "-c:a", "aac", "-b:a", ABR, "-ar", "48000",
+            "-pix_fmt", "yuv420p",
+            str(dst),
+        ])
+    else:
+        run([
+            "ffmpeg", "-y", "-i", str(src),
+            "-vf", vf,
+            "-c:v", "libx264", "-preset", "medium", "-crf", "20",
+            "-c:a", "aac", "-b:a", ABR, "-ar", "48000",
+            "-pix_fmt", "yuv420p",
+            str(dst),
+        ])
 
 def make_card(text: str, dst: Path, seconds: int = 3):
     """Generate a title/outro card from text (no external asset needed)."""
@@ -105,8 +130,8 @@ def build(manifest_path: Path):
             sys.exit(f"Clip '{clip['file']}' needs 'source' and 'license' fields.")
         credit = f"Source: {clip['source']} ({clip['license']})"
         dst = PROC / f"{i:02d}_{src.stem}.mp4"
-        print(f"\n[{i}/{len(clips)}] {clip['file']}")
-        normalize(src, dst, credit)
+        print(f"\n[{i}/{len(clips)}] {clip['file']}" + (" [+ATC]" if clip.get("atc_audio") else ""))
+        normalize(src, dst, credit, clip)
         parts.append(dst)
         attributions.append(
             f"- {clip.get('caption', src.stem)} — {clip['source']} ({clip['license']})"

@@ -48,9 +48,38 @@ claude
 # then ask it to: add a clip, tweak the card style, batch-build a week of episodes
 ```
 
+## ATC-audio overlay
+
+Add real radio comms to any clip by dropping the audio into `assets/` and
+declaring it in the manifest. The builder ducks ambient sound and mixes ATC
+on top — the tension of the real transmission is what keeps viewers watching.
+
+```json
+{
+  "file": "incident_01.mp4",
+  "atc_audio": "incident_01_atc.mp3",
+  "atc_delay": 2.5,
+  "atc_volume": 0.85,
+  "ambient_duck": 0.15
+}
+```
+
+| Field | Default | Effect |
+|---|---|---|
+| `atc_audio` | — | Filename in `assets/`. Omit to skip overlay. |
+| `atc_delay` | `0` | Seconds into the clip before ATC starts. Align to the peak moment. |
+| `atc_volume` | `0.85` | ATC level (0–1). |
+| `ambient_duck` | `0.15` | How much to reduce the clip's original audio under ATC. |
+
+**Where to get ATC audio (legally):**
+- **NTSB accident dockets** — CVR transcripts and sometimes audio. Public domain.
+- **LiveATC.net** — Real-time and archived ATC. Check their terms; non-commercial
+  archival use is generally permitted with credit.
+- **FAA FOIA requests** — Request specific recordings. Free, takes a few weeks.
+
 ## Next build-outs (ask and I'll add them)
 
-- **ATC-audio overlay** — sync radio comms to the footage
+- ~~**ATC-audio overlay**~~ — ✅ done
 - **Auto-caption generation** (Whisper) — for accessibility + SEO
 - **Thumbnail generator** — 1280×720 with title text
 - **YouTube Data API uploader** — for your OWN finished episodes
