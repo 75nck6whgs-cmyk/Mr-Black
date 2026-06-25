@@ -1,0 +1,28 @@
+{
+  "title": "Episode 001: [Incident Title Here]",
+  "outro": "Thanks for watching — subscribe for more aviation analysis.",
+  "description": "A breakdown of [incident]. What went wrong, why it happened, and what changed after.\n\n[Your full YouTube description here — timestamps, links, etc.]",
+  "clips": [
+    {
+      "file": "clip_001.mp4",
+      "caption": "Overview / establishing footage",
+      "source": "NTSB Aviation Accident Database",
+      "license": "Public Domain (U.S. Government Work)",
+      "url": "https://www.ntsb.gov/investigations/Pages/[case-id].aspx"
+    },
+    {
+      "file": "clip_002.mp4",
+      "caption": "Cockpit voice recorder visualization",
+      "source": "NASA Aviation Safety Reporting System",
+      "license": "Public Domain (U.S. Government Work)",
+      "url": "https://asrs.arc.nasa.gov/"
+    },
+    {
+      "file": "clip_003.mp4",
+      "caption": "Reconstruction / diagram footage",
+      "source": "Storyblocks — License #[YOUR-LICENSE-ID]",
+      "license": "Storyblocks Unlimited License",
+      "url": ""
+    }
+  ]
+}
