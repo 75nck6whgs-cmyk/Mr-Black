@@ -1,0 +1,30 @@
+# Faceless Aviation-Incident Channel — Pipeline
+
+A repeatable system for producing aviation-incident breakdown videos at scale,
+without filming anything yourself and without scraping other people's videos.
+The automation handles the legal-to-automate parts: normalizing footage,
+stamping attribution, building intro/outro, stitching episodes, and generating
+a description with full source credits.
+
+## The rule that keeps the channel alive
+
+You source footage you have the RIGHT to use, then transform it. You never
+download-and-repost. Three legal sourcing routes:
+
+1. **Public domain** — NTSB, NASA, FAA, military. Free, on-theme, no license needed.
+2. **Licensed marketplaces** — ViralHog, Newsflare, Storyful/Jukin, AP Archive,
+   Reuters. They buy rights from the original filmer and sublicense to you.
+   This is how the big "crazy footage" channels actually operate.
+3. **Direct permission** — DM the filmer. Keep the email/agreement on file.
+
+Each clip's manifest entry must declare `source` + `license` or the build aborts.
+That guardrail is intentional: it keeps a rights paper trail per clip.
+
+## The transformation requirement
+
+YouTube's reused-content policy demerits straight reposts even with a credit.
+Add real value: ATC audio walkthrough, a diagram of the aircraft's path,
+"here's the moment the crew recovered and why it worked." That's what makes the
+upload defensible AND a better product.
+
+## Usage
