@@ -41,3 +41,9 @@ python3 build_episode.py episode_001.json
 
 This works in either place. Claude Code is the better home for it because you'll
 be iterating on files and running ffmpeg repeatedly:
+
+```bash
+cd aviation-pipeline
+claude
+# then ask it to: add a clip, tweak the card style, batch-build a week of episodes
+```
