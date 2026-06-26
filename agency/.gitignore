@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+state/leads/*.json
+state/diagnosed/*.json
+state/built/*.html
+state/filmed/*.mp4
+state/filmed/*.json
+state/checked/*.json
+state/approved/*.json
+state/rejected/*.json
+state/sent/*.json
