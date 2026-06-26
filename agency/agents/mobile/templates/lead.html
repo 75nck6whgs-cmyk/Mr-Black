@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ lead.business.name }}</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+           background: #0f172a; color: #e2e8f0; padding-bottom: 110px; }
+
+    header { background: #1e293b; padding: 14px 16px;
+             border-bottom: 1px solid #334155;
+             display: flex; align-items: center; gap: 12px;
+             position: sticky; top: 0; z-index: 20; }
+    .back { color: #38bdf8; font-size: 24px; text-decoration: none; line-height: 1; }
+    header h1 { font-size: 16px; font-weight: 700; color: #f1f5f9;
+                white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Section card */
+    .sec { margin: 12px 12px 0; background: #1e293b;
+           border-radius: 16px; border: 1px solid #334155; overflow: hidden; }
+    .sec-head { padding: 9px 14px; background: #0f172a;
+                font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em;
+                color: #64748b; font-weight: 700; }
+    .row { padding: 11px 14px; border-bottom: 1px solid #334155; display: flex; flex-direction: column; gap: 2px; }
+    .row:last-child { border-bottom: none; }
+    .row-label { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+    .row-value { font-size: 14px; color: #e2e8f0; line-height: 1.5; }
+    .row-value a { color: #38bdf8; }
+
+    /* Score badges */
+    .badge-row { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 12px 0; }
+    .badge { padding: 5px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; }
+    .b-green  { background: #14532d; color: #86efac; }
+    .b-blue   { background: #1e3a5f; color: #93c5fd; }
+    .b-purple { background: #3b0764; color: #d8b4fe; }
+    .b-amber  { background: #451a03; color: #fde68a; }
+
+    /* Message highlight box */
+    .msg-box { margin: 12px 12px 0; padding: 14px 16px;
+               background: #0f172a; border-radius: 14px;
+               border: 1px solid #334155; border-left: 3px solid #38bdf8;
+               font-size: 14px; color: #cbd5e1; line-height: 1.65; }
+
+    /* Page preview thumbnails */
+    .previews { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 12px; }
+    .preview-wrap { display: flex; flex-direction: column; gap: 4px; }
+    .preview-frame { background: #334155; border-radius: 10px; overflow: hidden;
+                     aspect-ratio: 9/16; position: relative; cursor: pointer; }
+    .preview-frame iframe { width: 300%; height: 300%;
+                            transform: scale(0.333); transform-origin: top left;
+                            pointer-events: none; border: none; }
+    .preview-label { text-align: center; font-size: 10px; color: #94a3b8; text-transform: capitalize; }
+
+    /* Video */
+    video { width: 100%; border-radius: 10px; display: block; }
+    .script-text { padding: 12px 14px; font-size: 13px; color: #94a3b8;
+                   font-style: italic; line-height: 1.5; }
+
+    /* QA issues */
+    .issue { padding: 4px 0; font-size: 13px; color: #fde68a; }
+    .issue::before { content: "⚠ "; }
+
+    /* Fixed bottom actions */
+    .actions { position: fixed; bottom: 0; left: 0; right: 0;
+               background: #1e293b; border-top: 1px solid #334155;
+               display: flex; gap: 8px; padding: 10px 12px 28px; }
+    .act-btn { flex: 1; padding: 14px 6px; border: none; font-size: 14px; font-weight: 700;
+               cursor: pointer; border-radius: 14px; }
+    .act-reject   { background: #7f1d1d; color: #fca5a5; }
+    .act-schedule { background: #4c1d95; color: #d8b4fe; font-size: 12px; }
+    .act-approve  { background: #14532d; color: #86efac; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="/" class="back">&#8249;</a>
+  <h1>{{ lead.business.name }}</h1>
+</header>
+
+<!-- Score badges -->
+<div class="badge-row">
+  <span class="badge b-green">Priority {{ lead.diagnosis.priority_score }}/10</span>
+  <span class="badge b-blue">QA {{ lead.check.total_score }}/100</span>
+  {% if pages %}<span class="badge b-amber">{{ pages|length }} pages</span>{% endif %}
+  {% if lead.video and lead.video.status != 'failed' %}<span class="badge b-purple">&#9654; video</span>{% endif %}
+</div>
+
+<!-- Business Info -->
+<div class="sec">
+  <div class="sec-head">Business</div>
+  <div class="row">
+    <div class="row-label">Name</div>
+    <div class="row-value">{{ lead.business.name }}</div>
+  </div>
+  <div class="row">
+    <div class="row-label">Type &amp; City</div>
+    <div class="row-value">{{ lead.business.type | capitalize }} &middot; {{ lead.business.city }}</div>
+  </div>
+  <div class="row">
+    <div class="row-label">Rating</div>
+    <div class="row-value">&#9733; {{ lead.business.rating }} &mdash; {{ lead.business.reviews }} reviews</div>
+  </div>
+  <div class="row">
+    <div class="row-label">Phone</div>
+    <div class="row-value">
+      {% if lead.business.phone %}
+      <a href="tel:{{ lead.business.phone }}">{{ lead.business.phone }}</a>
+      {% else %}N/A{% endif %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="row-label">Address</div>
+    <div class="row-value">{{ lead.business.address }}</div>
+  </div>
+  <div class="row">
+    <div class="row-label">Current Website</div>
+    <div class="row-value">{{ lead.business.website or "None" }}</div>
+  </div>
+</div>
+
+<!-- Opportunity -->
+<div class="sec">
+  <div class="sec-head">Opportunity</div>
+  <div class="row">
+    <div class="row-label">Summary</div>
+    <div class="row-value">{{ lead.diagnosis.opportunity_summary }}</div>
+  </div>
+  <div class="row">
+    <div class="row-label">Pain Points</div>
+    <div class="row-value">
+      {% for p in lead.diagnosis.pain_points %}&bull; {{ p }}<br>{% endfor %}
+    </div>
+  </div>
+  <div class="row">
+    <div class="row-label">Recommended Features</div>
+    <div class="row-value">
+      {% for f in lead.diagnosis.recommended_features %}&bull; {{ f }}<br>{% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Outreach Message -->
+<div class="sec-head" style="margin: 12px 12px 0; background: none; font-size:10px; text-transform:uppercase; letter-spacing:.12em; color:#64748b; font-weight:700; padding: 0 14px;">
+  Outreach Message
+</div>
+<div class="msg-box">{{ lead.diagnosis.message }}</div>
+
+<!-- QA Issues -->
+{% if lead.check.issues %}
+<div class="sec">
+  <div class="sec-head">QA Notes</div>
+  <div class="row">
+    <div class="row-value">
+      {% for issue in lead.check.issues %}<div class="issue">{{ issue }}</div>{% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Video -->
+{% if lead.video %}
+<div class="sec" style="margin-top:12px">
+  <div class="sec-head">Video Script</div>
+  <div class="script-text">&ldquo;{{ lead.video.script }}&rdquo;</div>
+  {% if lead.video.file %}
+  <div class="row">
+    <video controls>
+      <source src="/video/{{ lead.id }}" type="video/mp4">
+    </video>
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
+<!-- Page Previews -->
+{% if pages %}
+<div class="sec" style="margin-top:12px">
+  <div class="sec-head">Landing Page Previews (tap to open)</div>
+  <div class="previews">
+    {% for page in pages %}
+    <div class="preview-wrap">
+      <a href="/preview/{{ lead.id }}/{{ page.style }}" target="_blank">
+        <div class="preview-frame">
+          <iframe src="/preview/{{ lead.id }}/{{ page.style }}" scrolling="no" loading="lazy"></iframe>
+        </div>
+      </a>
+      <div class="preview-label">{{ page.style }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Fixed Action Bar -->
+<div class="actions">
+  <form method="POST" action="/action/{{ lead.id }}" style="display:contents">
+    <button class="act-btn act-reject"   name="action" value="reject">&#10005; Reject</button>
+    <button class="act-btn act-schedule" name="action" value="schedule">&#128197; Schedule</button>
+    <button class="act-btn act-approve"  name="action" value="approve">&#10003; Approve</button>
+  </form>
+</div>
+
+</body>
+</html>

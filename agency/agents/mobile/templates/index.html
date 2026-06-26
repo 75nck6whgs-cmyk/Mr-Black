@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mr. Noble — Agency</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+           background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+
+    /* Header */
+    header { background: #1e293b; padding: 16px 20px 14px;
+             border-bottom: 1px solid #334155; position: sticky; top: 0; z-index: 20; }
+    .header-top { display: flex; justify-content: space-between; align-items: center; }
+    header h1 { font-size: 20px; font-weight: 800; color: #38bdf8; letter-spacing: -0.5px; }
+    .pill { background: #0ea5e9; color: #fff; font-size: 11px; font-weight: 700;
+            padding: 3px 9px; border-radius: 20px; }
+    header p { font-size: 12px; color: #64748b; margin-top: 4px; }
+
+    /* Stats bar */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 14px 14px 10px; }
+    .stat { background: #1e293b; border-radius: 12px; padding: 10px 6px; text-align: center;
+            border: 1px solid #334155; }
+    .stat-num { font-size: 22px; font-weight: 800; color: #38bdf8; line-height: 1; }
+    .stat-label { font-size: 9px; color: #64748b; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* Section heading */
+    .section-title { padding: 6px 16px 2px; font-size: 11px; text-transform: uppercase;
+                     letter-spacing: 0.12em; color: #475569; font-weight: 600; }
+
+    /* Lead card */
+    .card { margin: 0 12px 10px; background: #1e293b; border-radius: 18px;
+            border: 1px solid #334155; overflow: hidden; }
+    .card-header { padding: 14px 16px 10px; }
+    .card-name { font-size: 16px; font-weight: 700; color: #f1f5f9; }
+    .card-meta { font-size: 12px; color: #94a3b8; margin-top: 3px; }
+    .badges { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+    .badge { padding: 3px 9px; border-radius: 7px; font-size: 11px; font-weight: 700; }
+    .b-green { background: #14532d; color: #86efac; }
+    .b-blue  { background: #1e3a5f; color: #93c5fd; }
+    .b-amber { background: #451a03; color: #fde68a; }
+    .b-purple{ background: #3b0764; color: #d8b4fe; }
+
+    .card-msg { padding: 10px 16px; font-size: 13px; color: #cbd5e1; line-height: 1.55;
+                border-top: 1px solid #334155; border-bottom: 1px solid #334155; }
+
+    /* Card action row */
+    .card-actions { display: flex; }
+    .ca-btn { flex: 1; padding: 14px 8px; border: none; font-size: 15px; font-weight: 700;
+               cursor: pointer; transition: filter 0.15s; }
+    .ca-btn:active { filter: brightness(0.8); }
+    .ca-reject  { background: #7f1d1d; color: #fca5a5; }
+    .ca-view    { background: #1e3a5f; color: #93c5fd; flex: 2; font-size: 13px; }
+    .ca-approve { background: #14532d; color: #86efac; }
+
+    /* Empty state */
+    .empty { text-align: center; padding: 72px 24px; color: #475569; }
+    .empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .empty h2 { font-size: 20px; font-weight: 700; color: #64748b; margin-bottom: 6px; }
+    .empty p { font-size: 14px; line-height: 1.6; }
+
+    /* Pipeline mini-list */
+    .pipeline { margin: 10px 12px; background: #1e293b; border-radius: 14px;
+                border: 1px solid #334155; overflow: hidden; }
+    .pip-row { display: flex; justify-content: space-between; align-items: center;
+               padding: 11px 16px; border-bottom: 1px solid #334155; font-size: 13px; }
+    .pip-row:last-child { border-bottom: none; }
+    .pip-stage { color: #94a3b8; text-transform: capitalize; }
+    .pip-count { font-weight: 700; color: #38bdf8; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <h1>Mr. Noble</h1>
+    {% if leads %}<span class="pill">{{ leads|length }} to review</span>{% endif %}
+  </div>
+  <p>Agency automation dashboard</p>
+</header>
+
+<div class="stats">
+  <div class="stat"><div class="stat-num">{{ stats.leads }}</div><div class="stat-label">Raw</div></div>
+  <div class="stat"><div class="stat-num">{{ stats.diagnosed }}</div><div class="stat-label">Diagnosed</div></div>
+  <div class="stat"><div class="stat-num">{{ stats.checked }}</div><div class="stat-label">Review</div></div>
+  <div class="stat"><div class="stat-num">{{ stats.sent }}</div><div class="stat-label">Sent</div></div>
+</div>
+
+{% if leads %}
+  <div class="section-title">Pending Approval</div>
+
+  {% for lead in leads %}
+  <div class="card">
+    <div class="card-header">
+      <div class="card-name">{{ lead.business.name }}</div>
+      <div class="card-meta">
+        {{ lead.business.type | capitalize }} &middot; {{ lead.business.city }}
+        &middot; &#9733; {{ lead.business.rating }} ({{ lead.business.reviews }})
+      </div>
+      <div class="badges">
+        <span class="badge b-green">Priority {{ lead.diagnosis.priority_score }}/10</span>
+        <span class="badge b-blue">QA {{ lead.check.total_score }}/100</span>
+        {% if lead.pages %}
+        <span class="badge b-amber">{{ lead.pages|length }} pages</span>
+        {% endif %}
+        {% if lead.video and lead.video.status != 'failed' %}
+        <span class="badge b-purple">&#9654; video</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card-msg">{{ lead.diagnosis.message }}</div>
+
+    <div class="card-actions">
+      <form method="POST" action="/action/{{ lead.id }}" style="display:contents">
+        <button class="ca-btn ca-reject"  name="action" value="reject">&#10005;</button>
+        <button class="ca-btn ca-view"
+                type="button"
+                onclick="location.href='/lead/{{ lead.id }}'">View details &rsaquo;</button>
+        <button class="ca-btn ca-approve" name="action" value="approve">&#10003;</button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+
+{% else %}
+  <div class="empty">
+    <div class="empty-icon">&#127881;</div>
+    <h2>Inbox zero</h2>
+    <p>No leads waiting for approval.<br>Run the pipeline to generate new ones.</p>
+  </div>
+{% endif %}
+
+{% if stats.approved or stats.sent or stats.diagnosed or stats.built %}
+<div class="section-title" style="margin-top:12px">Full Pipeline</div>
+<div class="pipeline">
+  {% for stage, count in stats.items() %}
+  {% if count > 0 %}
+  <div class="pip-row">
+    <span class="pip-stage">{{ stage }}</span>
+    <span class="pip-count">{{ count }}</span>
+  </div>
+  {% endif %}
+  {% endfor %}
+</div>
+{% endif %}
+
+</body>
+</html>
