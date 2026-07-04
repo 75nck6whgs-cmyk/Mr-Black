@@ -76,6 +76,21 @@ class Pitcher:
         except Exception as e:
             return {"status": "failed", "error": str(e)}
 
+    def _prepare_instagram(self, biz_name: str, message: str) -> dict:
+        """
+        Instagram DM cannot be automated via official API without business-tier
+        access, so we generate the ready-to-paste message and save it for the
+        owner to send manually from the app.
+        """
+        outbox = Path(__file__).resolve().parent.parent / "state" / "instagram_outbox"
+        outbox.mkdir(parents=True, exist_ok=True)
+        slug = biz_name.lower().replace(" ", "_")[:30]
+        msg_file = outbox / f"{slug}.txt"
+        msg_file.write_text(
+            f"Business: {biz_name}\n\nDM to send:\n{message}\n", encoding="utf-8"
+        )
+        return {"status": "queued_manual", "file": str(msg_file)}
+
     def _send_email(self, email_addr: str, biz_name: str, message: str) -> dict:
         host = os.getenv("SMTP_HOST")
         user = os.getenv("SMTP_USER")
@@ -132,6 +147,12 @@ class Pitcher:
                 if r["status"] == "sent":
                     sent_via.append("email")
                     break
+
+            elif ch == "instagram":
+                r = self._prepare_instagram(biz["name"], message)
+                channel_results["instagram"] = r
+                sent_via.append("instagram_manual")
+                # Don't break — this is supplemental, not a delivery confirmation
 
         lead["pitch"] = {
             "sent_at": datetime.utcnow().isoformat(),

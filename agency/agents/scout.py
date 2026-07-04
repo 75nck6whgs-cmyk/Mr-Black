@@ -17,6 +17,7 @@ from dotenv import load_dotenv
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from core.state import StateManager
 from core.website_checker import check_website
+from core.deduplicator import Deduplicator
 
 load_dotenv()
 logger = logging.getLogger("scout")
@@ -53,6 +54,8 @@ class Scout:
         if not api_key:
             raise EnvironmentError("GOOGLE_MAPS_API_KEY is not set.")
         self.gmaps = googlemaps.Client(key=api_key)
+        self.dedup = Deduplicator()
+        logger.info(f"Dedup: {self.dedup.total()} businesses already seen")
 
     # ------------------------------------------------------------------
 
@@ -73,6 +76,11 @@ class Scout:
 
     def _process(self, place: dict, city: str, btype: str) -> bool:
         if not self._qualify(place):
+            return False
+
+        # Skip businesses we've already pitched
+        if self.dedup.is_seen(place["place_id"], None):
+            logger.debug(f"Skip (already seen): {place.get('name')}")
             return False
 
         try:
@@ -118,6 +126,7 @@ class Scout:
         }
 
         lead_id = self.state.save("leads", lead)
+        self.dedup.mark_seen(place["place_id"], details.get("formatted_phone_number"))
         logger.info(f"  + {lead['business']['name']} [{lead_id}]")
         return True
 

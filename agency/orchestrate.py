@@ -33,7 +33,8 @@ AGENT_DESCRIPTIONS = {
     "builder":   "Build 3 landing page variations per top lead",
     "filmer":    "Create 10-second promo video per lead",
     "checker":   "QA-review messages before owner approval",
-    "pitcher":   "Send approved leads via WhatsApp / SMS / Email",
+    "pitcher":   "Send approved leads via WhatsApp / SMS / Email / Instagram",
+    "followup":  "Re-engage sent leads that haven't responded in N days",
 }
 
 
@@ -50,6 +51,8 @@ def _import_agent(name: str):
         from agents.checker import run
     elif name == "pitcher":
         from agents.pitcher import run
+    elif name == "followup":
+        from agents.followup import run
     else:
         raise ValueError(f"Unknown agent: {name}")
     return run
@@ -87,7 +90,7 @@ def main(agent, skip, verbose):
     Mr. Noble Agency Automation Orchestrator.
 
     \b
-    AGENT choices: all | scout | diagnoser | builder | filmer | checker | pitcher
+    AGENT choices: all | scout | diagnoser | builder | filmer | checker | pitcher | followup
     """
     level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(level=level, format="%(asctime)s %(name)s %(message)s")
