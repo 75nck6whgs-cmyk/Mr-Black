@@ -11,3 +11,7 @@ state/checked/*.json
 state/approved/*.json
 state/rejected/*.json
 state/sent/*.json
+state/seen.json
+state/revenue.json
+state/instagram_outbox/
+*.log
