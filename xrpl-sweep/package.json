@@ -1,0 +1,18 @@
+{
+  "name": "xrpl-sweep",
+  "version": "1.0.0",
+  "description": "Watches an XRPL receiving account and auto-sweeps incoming payments to a main account.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "setup:testnet": "node scripts/setup-testnet-accounts.js",
+    "test": "node scripts/test-sweep-math.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "xrpl": "^5.0.0"
+  }
+}
