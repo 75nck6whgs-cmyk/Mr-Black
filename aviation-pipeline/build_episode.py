@@ -36,12 +36,12 @@ def run(cmd):
 
 def normalize(src: Path, dst: Path, credit: str, clip: dict = None):
     """Scale/pad to 1080p, unify fps + audio, burn attribution, optionally mix ATC audio."""
-    safe = credit.replace(":", r"\:").replace("’", r"’")
+    safe = credit.replace(":", r"\:").replace("'", r"’")
     vf = (
         f"scale={W}:{H}:force_original_aspect_ratio=decrease,"
         f"pad={W}:{H}:(ow-iw)/2:(oh-ih)/2,"
         f"fps={FPS},"
-        f"drawtext=text=’{safe}’:x=20:y=h-40:fontsize=22:"
+        f"drawtext=text='{safe}':x=20:y=h-40:fontsize=22:"
         f"fontcolor=white@0.85:box=1:boxcolor=black@0.4:boxborderw=8"
     )
 
