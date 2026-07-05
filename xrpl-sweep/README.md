@@ -28,9 +28,10 @@ discussion this came out of for why.
    on the receiving account, and prints the values to paste into `.env`.
 3. `cp .env.example .env` and fill in the printed values.
 4. `npm start` — leave it running.
-5. From a wallet/tool of your own, send a Testnet payment to the receiving
-   address **with a destination tag** (required, since step 2 turned that
-   flag on). Watch the process log the incoming payment and the sweep.
+5. In a second terminal: `npm run send:test-payment` (optionally
+   `-- <amountXrp> <destinationTag>`). This funds a throwaway Testnet wallet
+   and sends it a payment with a destination tag to your receiving address.
+   Watch the first terminal log the incoming payment and the sweep.
 6. Check `data/sweeps.log` — each line pairs the incoming hash, the tag, and
    the sweep hash.
 

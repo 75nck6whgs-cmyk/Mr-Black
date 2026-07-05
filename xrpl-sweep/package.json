@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node src/index.js",
     "setup:testnet": "node scripts/setup-testnet-accounts.js",
+    "send:test-payment": "node scripts/send-test-payment.js",
     "test": "node scripts/test-sweep-math.js"
   },
   "keywords": [],
