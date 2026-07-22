@@ -1,0 +1,63 @@
+name: Geneva Loop
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 * * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: geneva-loop
+  cancel-in-progress: false
+
+jobs:
+  advance-one-tooth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install PyYAML==6.0.2
+
+      - name: Emergency stop check
+        id: stop
+        shell: bash
+        run: |
+          if [ -f geneva_loop/STOP ]; then
+            echo "The Geneva loop is manually halted."
+            echo "halted=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "halted=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Advance every packet by one state
+        if: steps.stop.outputs.halted != 'true'
+        run: |
+          touch geneva_loop/queue.jsonl
+          python geneva_loop/engine.py \
+            --config geneva_loop/workflow.yaml \
+            --queue geneva_loop/queue.jsonl \
+            --audit geneva_loop/audit.jsonl
+
+      - name: Commit state and audit trail
+        if: steps.stop.outputs.halted != 'true'
+        shell: bash
+        run: |
+          if git diff --quiet -- geneva_loop/queue.jsonl geneva_loop/audit.jsonl; then
+            echo "No state movement to commit."
+            exit 0
+          fi
+          git config user.name "geneva-loop-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add geneva_loop/queue.jsonl geneva_loop/audit.jsonl
+          git commit -m "Advance Geneva loop one state"
+          git push
