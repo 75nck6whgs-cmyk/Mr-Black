@@ -1,0 +1,38 @@
+version: 1
+
+capture:
+  required_payload_fields:
+    - action
+
+risk:
+  default: medium
+  kind_levels:
+    email_draft: low
+    email_send: high
+    business_analysis: low
+    external_publication: high
+    legal_communication: critical
+    payment: critical
+    destructive_action: critical
+
+approval:
+  gated_risks:
+    - high
+    - critical
+  gated_kinds:
+    - email_send
+    - external_publication
+    - legal_communication
+    - payment
+    - destructive_action
+
+execution:
+  max_attempts: 3
+  one_transition_per_run: true
+  idempotency_required: true
+
+controls:
+  emergency_stop: true
+  audit_every_transition: true
+  prohibit_state_skipping: true
+  allowlisted_adapters_only: true

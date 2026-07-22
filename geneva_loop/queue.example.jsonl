@@ -1,0 +1,2 @@
+{"id":"email-001","kind":"email_draft","payload":{"action":"draft a reply","plan":["read the message","draft a factual reply","verify recipient and claims"]},"state":"CAPTURE","approved":false}
+{"id":"payment-001","kind":"payment","payload":{"action":"prepare a supplier payment","plan":["validate invoice","check allow-listed destination","request approval","submit once","reconcile settlement"]},"state":"CAPTURE","approved":false}
